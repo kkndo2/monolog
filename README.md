@@ -18,38 +18,36 @@ composer require monolog/monolog
 * 로그 등급 : 핸들러마다 위험도 등급이 지정되어 있어서, 해당 등급보다 높은경우만 로그 가 작성됨. 
   관련하여, 각 상황의 위험도에따른 처리를 아래와같은 구조로 하는게 어떨까 함.
   
-  A안) 개발모드인경우, dev.log가 기록되고,  워닝이상의 정보가 log.txt 와 dev.log에 중복되어 기록되는 case
+    A안) 디버깅모드인경우, dev.log가 기록되고,  워닝이상의 정보가 log.txt 와 dev.log에 중복되어 기록되는 case
     ``` php
     $logger_db = new Logger('db'); //디비처리 로거
     $logger_req = new Logger('request'); //http요청처리 로거
     
     $logger_db->pushHandler(시스템 관리자에게 메일발송핸들러(크리티컬));
     $logger_db->pushHandler(log.txt 파일로그핸들러(워닝));
-    if(실행모드==개발){ // 이부분에 따른 세분화는 실제프로젝트에서 고민하면됨. 
+    if(실행모드==디버깅){ // 이부분에 따른 세분화는 실제프로젝트에서 고민하면됨. 
         $logger_db->pushHandler(dev.txt 파일로그핸들러(디버그));
     }//end if
     
     if(디비접속실패){
         $logger_db->addEmergency('디비접속안됨');
     }//end if
-    
     ```
-    B안) 개발모드인경우, log.txt에 디버깅 이상의 정보가 추가되어 기록되는 case. 로그파일이 실행모드에 상관없이 항상 동일하게 유지
+    B안) 디버깅모드인경우, log.txt에 디버깅 이상의 정보가 추가되어 기록되는 case. 로그파일이 실행모드에 상관없이 항상 동일하게 유지
     ``` php
-        $logger_db = new Logger('db'); //디비처리 로거
-        $logger_req = new Logger('request'); //http요청처리 로거
-        
-        $logger_db->pushHandler(시스템 관리자에게 메일발송핸들러(크리티컬));
-        $level=워닝; //로그 위험도
-        if(실행모드==개발){ // 이부분에 따른 세분화는 실제프로젝트에서 고민하면됨. 
-            $level=디버깅;
-        }//end if
-        $logger_db->pushHandler(log.txt 파일로그핸들러($level));
-        
-        if(디비접속실패){
-            $logger_db->addEmergency('디비접속안됨');
-        }//end if
-        
+    $logger_db = new Logger('db'); //디비처리 로거
+    $logger_req = new Logger('request'); //http요청처리 로거
+    
+    $logger_db->pushHandler(시스템 관리자에게 메일발송핸들러(크리티컬));
+    $level=워닝; //로그 위험도
+    if(실행모드==디버깅){ // 이부분에 따른 세분화는 실제프로젝트에서 고민하면됨. 
+        $level=디버깅;
+    }//end if
+    $logger_db->pushHandler(log.txt 파일로그핸들러($level));
+    
+    if(디비접속실패){
+        $logger_db->addEmergency('디비접속안됨');
+    }//end if
     ```
 
 ## 참고링크
